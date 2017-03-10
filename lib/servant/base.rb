@@ -10,7 +10,6 @@ module Servant
     end
 
     class_attribute :_context_class, instance_writer: false
-    class_attribute :_exception, instance_writer: false
 
     class << self
       def perform(*args)
@@ -23,7 +22,7 @@ module Servant
 
       def perform!(*args)
         perform(*args).tap do |result|
-          raise(self._exception || StandardError, result.errors.full_messages) if result.failed?
+          raise Error.new(result.errors.full_messages) if result.failed?
         end
       end
 
@@ -34,10 +33,6 @@ module Servant
 
       def context(&block)
         self._context_class = ContextBuilder.new(&block).build
-      end
-
-      def exception(klass)
-        self._exception = klass
       end
     end
 
