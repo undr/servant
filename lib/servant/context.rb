@@ -15,7 +15,7 @@ module Servant
 
     def initialize(arguments = {})
       @arguments = arguments
-      @processed = {}
+      @coerced = {}
       valid?
     end
 
@@ -31,9 +31,9 @@ module Servant
 
     protected
 
-    def preprocess(name, value, preprocessor)
-      if preprocessor && preprocessor.respond_to?(:call)
-        @processed[name] = preprocessor.call(value)
+    def coerce(name, value, coercion)
+      if coercion && coercion.respond_to?(:call)
+        @coerced[name] = coercion.call(value)
       else
         value
       end

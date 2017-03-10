@@ -29,15 +29,15 @@ module Servant
       name = name.to_sym
 
       default = options.delete(:default)
-      preprocessor = options.delete(:preprocess)
+      coercion = options.delete(:coerce)
 
       klass._argument_names = klass._argument_names + [name]
 
       klass.send(:define_method, name) do
-        return @processed[name] if @processed.has_key?(name)
+        return @coerced[name] if @coerced.has_key?(name)
 
         if arguments[name]
-          preprocess(name, arguments[name], preprocessor)
+          coerce(name, arguments[name], coercion)
         else
           DEFAULT_NORMALIZER.call(default)
         end

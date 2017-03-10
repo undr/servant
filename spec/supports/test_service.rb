@@ -3,7 +3,7 @@ class TestService < Servant::Base
     argument :attr1, presence: true, type: String
     argument :attr2, presence: true, type: Integer, default: -> { Time.now.to_i }
     argument :attr3, type: Hash
-    argument :attr4, default: 'default', preprocess: -> (value) { 'preprocessed' }
+    argument :attr4, default: 'default', coerce: -> (value) { 'preprocessed' }
   end
 
   def perform
