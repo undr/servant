@@ -29,18 +29,25 @@ module Servant
       name = name.to_sym
 
       default = options.delete(:default)
+      preprocessor = options.delete(:preprocess)
 
       klass._argument_names = klass._argument_names + [name]
 
       klass.send(:define_method, name) do
-        arguments[name] || DEFAULT_NORMALIZER.call(default)
+        return @processed[name] if @processed.has_key?(name)
+
+        if arguments[name]
+          preprocess(name, arguments[name], preprocessor)
+        else
+          DEFAULT_NORMALIZER.call(default)
+        end
       end
 
       if type = options.delete(:type)
         options[:'Servant::ContextBuilder::Type'] = type
       end
 
-      validates(name, options)
+      validates(name, options) if options.any?
     end
 
     def validates(*args)

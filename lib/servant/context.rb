@@ -15,6 +15,7 @@ module Servant
 
     def initialize(arguments = {})
       @arguments = arguments
+      @processed = {}
       valid?
     end
 
@@ -26,6 +27,16 @@ module Servant
 
     def errors
       @errors ||= Errors.new(self)
+    end
+
+    protected
+
+    def preprocess(name, value, preprocessor)
+      if preprocessor && preprocessor.respond_to?(:call)
+        @processed[name] = preprocessor.call(value)
+      else
+        value
+      end
     end
   end
 end

@@ -31,7 +31,7 @@ RSpec.describe Servant::Base do
         let(:arguments) { { attr1: 'error' } }
 
         its(:errors) { is_expected.to have(1).errors }
-        its(:value) { is_expected.to eq('Value') }
+        its(:value) { is_expected.to eq('default') }
 
         it { expect(subject.errors[:base]).to eq(['Some not critical error']) }
       end
@@ -45,11 +45,18 @@ RSpec.describe Servant::Base do
         it { expect(subject.errors[:base]).to eq(['Critical error']) }
       end
 
+      context 'with preprocessed arg' do
+        let(:arguments) { { attr1: 'some value', attr4: 'some value' } }
+
+        its(:errors) { is_expected.to have(0).errors }
+        its(:value) { is_expected.to eq('preprocessed') }
+      end
+
       context 'without any errors' do
         let(:arguments) { { attr1: 'some value' } }
 
         its(:errors) { is_expected.to have(0).errors }
-        its(:value) { is_expected.to eq('Value') }
+        its(:value) { is_expected.to eq('default') }
       end
     end
   end
