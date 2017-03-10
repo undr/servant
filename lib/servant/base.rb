@@ -27,7 +27,7 @@ module Servant
         end
       end
 
-      def call
+      def call(*args)
         result = perform!(*args)
         result.value
       end
