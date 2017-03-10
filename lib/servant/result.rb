@@ -14,9 +14,5 @@ module Servant
     def failed?
       !success?
     end
-
-    def raise_error_if_unsuccess!
-      raise(StandardError, errors.full_messages) unless success?
-    end
   end
 end
