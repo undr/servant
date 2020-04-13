@@ -1,28 +1,15 @@
 module Servant
   class Base
-    class AbortError < StandardError
-      attr_reader :errors
-
-      def initialize(errors)
-        @errors = errors
-        super()
-      end
-    end
-
     class_attribute :_context_class, instance_writer: false
 
     class << self
       def perform(*args)
-        instance = new(*args)
-        value = instance.errors.empty? ? instance.perform : nil
-        Result.new(instance.errors, value)
-      rescue AbortError => e
-        Result.new(e.errors)
+        new(*args).send(:fetch_result)
       end
 
       def perform!(*args)
         perform(*args).tap do |result|
-          raise Error.new(result.errors.full_messages) if result.failed?
+          raise Exceptions::ExecutionFailed.new(result.errors) if result.failed?
         end
       end
 
@@ -37,13 +24,12 @@ module Servant
     end
 
     attr_reader :errors, :context
+    private_class_method :new
 
     def initialize(arguments)
       @context = _context_class.nil? ? Context.new(arguments) : _context_class.new(arguments)
       @errors  = @context.errors
     end
-
-    private
 
     def perform
     end
@@ -62,12 +48,21 @@ module Servant
 
     def halt!(message, code = :base)
       error!(message, code)
-      raise AbortError.new(@errors)
+      raise Exceptions::ExecutionAborted.new(errors)
     end
 
-    def halt_with!(errors)
-      merge_errors!(errors)
-      raise AbortError.new(@errors)
+    def halt_with!(other_errors)
+      merge_errors!(other_errors)
+      raise Exceptions::ExecutionAborted.new(errors)
+    end
+
+    private
+
+    def fetch_result
+      value = errors.empty? ? perform : nil
+      Result.new(errors, value)
+    rescue Exceptions::ExecutionAborted => e
+      Result.new(e.errors)
     end
   end
 end

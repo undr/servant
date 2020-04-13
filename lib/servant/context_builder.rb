@@ -12,6 +12,7 @@ module Servant
       end
     end
 
+    AVAILABLE_OPTION_KEYS = [:type, :keys, :coerce, :default].freeze
     DEFAULT_NORMALIZER = -> (value) do
       case value
       when Proc
@@ -22,14 +23,13 @@ module Servant
     end
 
     def initialize(&block)
-      instance_eval(&block)
+      instance_eval(&block) if block_given?
     end
 
     def argument(name, options = {})
       name = name.to_sym
-
-      default = options.delete(:default)
-      coercion = options.delete(:coerce)
+      default = options[:default]
+      coercion = options[:coerce]
 
       klass._argument_names = klass._argument_names + [name]
 
@@ -43,11 +43,8 @@ module Servant
         end
       end
 
-      if type = options.delete(:type)
-        options[:'Servant::ContextBuilder::Type'] = type
-      end
-
-      validates(name, options) if options.any?
+      validate_options = validate_options(options)
+      validates(name, validate_options) if validate_options.any?
     end
 
     def validates(*args)
@@ -59,6 +56,16 @@ module Servant
     end
 
     private
+
+    def validate_options(options)
+      options.dup.tap do |opts|
+        if type = opts[:type]
+          opts[:'Servant::ContextBuilder::Type'] = type
+        end
+
+        AVAILABLE_OPTION_KEYS.each { |key| opts.delete(key) }
+      end
+    end
 
     def klass
       @klass ||= Class.new(Context)

@@ -46,7 +46,7 @@ module Services
 
     def send_to_somewhere(something)
       result = Services::ExportToSomewhere.perform(something: something, to: context.export_to)
-      error('impossible to export it to somewhere', :export) unless result.success?
+      error!('impossible to export it to somewhere', :export) unless result.success?
     end
 
     def create_something

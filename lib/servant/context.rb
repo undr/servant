@@ -16,7 +16,7 @@ module Servant
     def initialize(arguments = {})
       @arguments = arguments
       @coerced = {}
-      valid?
+      validate
     end
 
     def to_hash
