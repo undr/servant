@@ -9,8 +9,8 @@ Gem::Specification.new do |spec|
   spec.authors       = ['undr']
   spec.email         = ['undr@yandex.ru']
 
-  spec.summary       = %q{Build an army of servants and king it over them.}
-  spec.description   = %q{Build an army of servants and king it over them.}
+  spec.summary       = %q{Build an army of servants and command them.}
+  spec.description   = %q{Build an army of servants and command them.}
   spec.homepage      = 'https://github.com/undr/servant'
   spec.license       = 'MIT'
 

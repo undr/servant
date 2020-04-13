@@ -1,6 +1,6 @@
 # Servant
 
-Build an army of servants and king it over them.
+Build an army of servants and command them.
 
 ## Installation
 
@@ -8,6 +8,12 @@ Add this line to your application's Gemfile:
 
 ```ruby
 gem 'servant'
+```
+
+or:
+
+```ruby
+gem 'servant', github: 'undr/servant'
 ```
 
 And then execute:
