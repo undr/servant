@@ -78,7 +78,10 @@ module Services
     context do
       argument :name, type: String, presence: true
       argument :description, type: String, presence: true
-      argument :rating, type: Integer, default: 0
+      argument :rating,
+        type: Integer,
+        default: 0,
+        numericality: { greater_than_or_equal_to: 0, less_than_or_equal_to: 10 }
     end
 
     def perform
