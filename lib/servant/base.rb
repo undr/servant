@@ -61,7 +61,7 @@ module Servant
     def fetch_result
       value = errors.empty? ? perform : nil
       Result.new(errors, value)
-    rescue Exceptions::ExecutionAborted => e
+    rescue Exceptions::ExecutionAborted, Exceptions::ExecutionFailed => e
       Result.new(e.errors)
     end
   end
