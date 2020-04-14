@@ -10,4 +10,9 @@ require 'servant/base'
 require 'servant/version'
 
 module Servant
+  extend self
+
+  def boolean
+    [FalseClass, TrueClass]
+  end
 end

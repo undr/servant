@@ -38,7 +38,7 @@ RSpec.describe Servant::ContextBuilder do
       context 'with integer value' do
         let(:name) { 100 }
 
-        it { expect(subject.errors[:name]).to eq(['must be a type of String']) }
+        it { expect(subject.errors[:name]).to eq(['must be any of these types: String']) }
       end
 
       context 'without value' do
@@ -46,6 +46,34 @@ RSpec.describe Servant::ContextBuilder do
 
         its(:name) { is_expected.to be nil }
         its(:errors) { is_expected.to be_empty }
+      end
+
+      context 'when defined a few types' do
+        subject { builder.build.new(attr: attr) }
+
+        before do
+          builder.argument(:attr, type: [String, Integer])
+        end
+
+        context 'with one valid type' do
+          let(:attr) { 'string' }
+
+          its(:attr) { is_expected.to eq(attr) }
+          its(:errors) { is_expected.to be_empty }
+        end
+
+        context 'with second valid type' do
+          let(:attr) { 1 }
+
+          its(:attr) { is_expected.to eq(attr) }
+          its(:errors) { is_expected.to be_empty }
+        end
+
+        context 'with invalid type' do
+          let(:attr) { {} }
+
+          it { expect(subject.errors[:attr]).to eq(['must be any of these types: String, Integer']) }
+        end
       end
     end
 

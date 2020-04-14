@@ -2,17 +2,29 @@ module Servant
   class ContextBuilder
     class TypeValidator < ActiveModel::EachValidator
       def validate_each(record, attribute, value)
-        record.errors.add attribute, "must be a type of #{options[:with]}" if wrong_type?(value, options)
+        types = get_types(options)
+        record.errors.add attribute, "must be any of these types: #{types.join(', ')}" if types.present? && wrong_type?(value, types)
       end
 
       private
 
-      def wrong_type?(value, options)
-        !value.nil? && !value.is_a?(options[:with])
+      def wrong_type?(value, types)
+        !value.nil? && types.none? { |type| value.is_a?(type) }
+      end
+
+      def get_types(options)
+        case
+        when options[:with].present?
+          [options[:with]]
+        when options[:in].present?
+          options[:in]
+        else
+          []
+        end
       end
     end
 
-    AVAILABLE_OPTION_KEYS = [:type, :keys, :coerce, :default].freeze
+    AVAILABLE_OPTION_KEYS = [:type, :coerce, :default].freeze
     DEFAULT_NORMALIZER = -> (value) do
       case value
       when Proc
